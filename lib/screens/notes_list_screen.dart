@@ -31,7 +31,6 @@ class NoteEditorScreen extends StatefulWidget {
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final TextEditingController _titleController = TextEditingController(text: 'Title');
   final TextEditingController _contentController = TextEditingController(text: 'I Would like to...');
-  String _selectedCategory = 'No category';
 
   @override
   void dispose() {
@@ -57,33 +56,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Status bar area
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '9:41',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.signal_cellular_4_bar, size: 16, color: Colors.black),
-                        const SizedBox(width: 4),
-                        Icon(Icons.wifi, size: 16, color: Colors.black),
-                        const SizedBox(width: 4),
-                        Icon(Icons.battery_full, size: 20, color: Colors.black),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
               // Header with back button and checkmark
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -129,41 +101,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
                     const SizedBox(height: 4),
 
-                    // Timestamp and category
-                    Row(
-                      children: [
-                        const Text(
-                          'Today 6:45 pm',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () {
-                            _showCategoryPicker();
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                _selectedCategory,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF7B68AA),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(
-                                Icons.arrow_drop_down,
-                                color: Color(0xFF7B68AA),
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    // Timestamp
+                    const Text(
+                      'Today 6:45 pm',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                      ),
                     ),
                   ],
                 ),
@@ -199,54 +143,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  void _showCategoryPicker() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Select Category',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildCategoryOption('No category'),
-              _buildCategoryOption('Personal'),
-              _buildCategoryOption('Work'),
-              _buildCategoryOption('Ideas'),
-              _buildCategoryOption('Important'),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCategoryOption(String category) {
-    return ListTile(
-      title: Text(category),
-      trailing: _selectedCategory == category
-          ? const Icon(Icons.check, color: Color(0xFF7B68AA))
-          : null,
-      onTap: () {
-        setState(() {
-          _selectedCategory = category;
-        });
-        Navigator.pop(context);
-      },
     );
   }
 }
