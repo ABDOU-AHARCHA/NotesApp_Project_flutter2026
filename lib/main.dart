@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'models/note.dart';
 import 'models/category.dart';
-import 'services/category_service.dart';  // FIXED - removed ../
+import 'services/category_service.dart';
 import 'screens/home_screen.dart';
+import 'theme/app_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize Hive
   await Hive.initFlutter();
@@ -34,10 +38,7 @@ class NotesApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Notes App',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        fontFamily: 'SF Pro',
-      ),
+      theme: AppTheme.lightTheme,
       home: const NotesHomeScreen(),
     );
   }
