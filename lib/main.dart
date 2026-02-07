@@ -1,24 +1,36 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'models/note.dart';
+import 'screens/home_screen.dart';
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Hive
+  await Hive.initFlutter();
 
-void main() {
-  runApp(const MyApp());
+  // Register adapter
+  Hive.registerAdapter(NoteAdapter());
+
+  // Open box
+  await Hive.openBox<Note>('notes');
+
+  runApp(const NotesApp());
 }
 
-class MyApp extends StatelessWidget {
+class NotesApp extends StatelessWidget {
+  const NotesApp({super.key});
 
-
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(), // shows your LoginScreen first
+      title: 'Notes App',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        fontFamily: 'SF Pro',
+      ),
+      home: const NotesHomeScreen(),
     );
   }
 }
-

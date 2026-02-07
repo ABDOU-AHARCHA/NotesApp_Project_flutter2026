@@ -1,36 +1,27 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const NotesApp());
-}
-
-class NotesApp extends StatelessWidget {
-  const NotesApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Notes App',
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-        fontFamily: 'SF Pro',
-      ),
-      home: const NoteEditorScreen(),
-    );
-  }
-}
+import '../models/note.dart';
 
 class NoteEditorScreen extends StatefulWidget {
-  const NoteEditorScreen({Key? key}) : super(key: key);
+  final Note? note;
+
+  const NoteEditorScreen({Key? key, this.note}) : super(key: key);
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
 }
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
-  final TextEditingController _titleController = TextEditingController(text: 'Title');
-  final TextEditingController _contentController = TextEditingController(text: 'I Would like to...');
+  late final TextEditingController _titleController;
+  late final TextEditingController _contentController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController =
+        TextEditingController(text: widget.note?.title ?? 'Title');
+    _contentController =
+        TextEditingController(text: widget.note?.content ?? 'I Would like to...');
+  }
 
   @override
   void dispose() {
@@ -47,75 +38,68 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE8C5E8), // Light pink
-              Color(0xFFD4A5D4), // Medium pink
-            ],
+            colors: [Color(0xFFE8C5E8), Color(0xFFD4A5D4)],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              // Header with back button and checkmark
+              // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.black),
-                      onPressed: () {
-                        // Handle back navigation
-                      },
-                    ),
+                        icon: const Icon(Icons.arrow_back, color: Colors.black),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
                     IconButton(
                       icon: const Icon(Icons.check, color: Colors.black),
                       onPressed: () {
-                        // Handle save action
+                        if (_titleController.text.isNotEmpty &&
+                            _contentController.text.isNotEmpty) {
+                          final newNote = Note(
+                            id: widget.note?.id ??
+                                DateTime.now().millisecondsSinceEpoch.toString(),
+                            title: _titleController.text,
+                            content: _contentController.text,
+                            createdAt: DateTime.now(),
+                          );
+                          Navigator.pop(context, newNote);
+                        }
                       },
-                    ),
+                    )
                   ],
                 ),
               ),
-
-              // Title and metadata section
+              // Title & timestamp
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title input
                     TextField(
                       controller: _titleController,
                       style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                       decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
+                          border: InputBorder.none, isDense: true, contentPadding: EdgeInsets.zero),
                     ),
-
                     const SizedBox(height: 4),
-
-                    // Timestamp
                     const Text(
                       'Today 6:45 pm',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.black54),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Content area
+              // Content
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -124,18 +108,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     maxLines: null,
                     expands: true,
                     textAlignVertical: TextAlignVertical.top,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      height: 1.5,
-                    ),
+                    style: const TextStyle(fontSize: 16, color: Colors.black, height: 1.5),
                     decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Start typing...',
-                      hintStyle: TextStyle(
-                        color: Colors.black38,
-                      ),
-                    ),
+                        border: InputBorder.none,
+                        hintText: 'Start typing...',
+                        hintStyle: TextStyle(color: Colors.black38)),
                   ),
                 ),
               ),
