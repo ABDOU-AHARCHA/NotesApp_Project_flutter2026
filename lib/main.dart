@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'models/note.dart';
+import 'models/category.dart';
+import 'services/category_service.dart';  // FIXED - removed ../
 import 'screens/home_screen.dart';
 
 void main() async {
@@ -9,11 +11,17 @@ void main() async {
   // Initialize Hive
   await Hive.initFlutter();
 
-  // Register adapter
+  // Register adapters
   Hive.registerAdapter(NoteAdapter());
+  Hive.registerAdapter(CategoryAdapter());
 
-  // Open box
+  // Open boxes
   await Hive.openBox<Note>('notes');
+  await Hive.openBox<Category>('categories');
+
+  // Initialize default categories
+  final categoryService = CategoryService();
+  await categoryService.initializeDefaultCategories();
 
   runApp(const NotesApp());
 }
