@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/note.dart';
-import '../models/category.dart';
-import '../services/category_service.dart';
+import '../models/note_category.dart';
+import '../services/hive_category_service.dart';
 
 class NoteEditorScreen extends StatefulWidget {
   final Note? note;
@@ -18,7 +18,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late final CategoryService _categoryService;
 
   String _selectedCategoryId = 'none'; // 👈 CHANGED: Default to 'none' instead of 'default'
-  List<Category> _categories = [];
+  List<NoteCategory> _categories = [];
 
   @override
   void initState() {
@@ -220,7 +220,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ElevatedButton(
               onPressed: () async {
                 if (nameController.text.trim().isNotEmpty) {
-                  final newCategory = Category(
+                  final newCategory = NoteCategory(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     name: nameController.text.trim(),
                     color: selectedColor.value,

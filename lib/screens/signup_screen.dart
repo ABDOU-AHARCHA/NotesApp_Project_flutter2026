@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'signup_screen.dart';
+import 'login_screen.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -31,21 +33,21 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 100),
+            const SizedBox(height: 80),
             const Text(
-              'Welcome to Memoa',
+              'Create Account',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 85),
+            const SizedBox(height: 60),
             Container(
-              child: loginForm(),
+              child: signupForm(),
             ),
             const SizedBox(height: 30),
-            // Google Login Button Placeholder
+            // Google Signup Button Placeholder
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 60),
               child: ElevatedButton.icon(
@@ -57,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // TODO: Google login functionality
+                  // TODO: Google signup functionality
                 },
                 label: const Text(
                   'Continue With Google',
@@ -76,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // Create Account Button - Navigate to Signup
+            // Already have account - Go to Login
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 60),
               child: ElevatedButton(
@@ -90,11 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => const SignupScreen()),
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
                   );
                 },
                 child: const Text(
-                  'Create new account',
+                  'Already have an account? Login',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,
@@ -104,13 +106,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
-  Widget loginForm() {
+  Widget signupForm() {
     return Center(
       child: SizedBox(
         width: 300,
@@ -126,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Sign In',
+                  'Sign Up',
                   style: TextStyle(
                     fontSize: 25,
                     fontFamily: 'Poppins',
@@ -141,6 +144,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
+                    // Basic email validation
+                    if (!value.contains('@') || !value.contains('.')) {
+                      return 'Please enter a valid email';
+                    }
                     return null;
                   },
                   decoration: InputDecoration(
@@ -151,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     filled: true,
                     fillColor: const Color(0xFFD7BCE8),
-                    hintText: 'Email/Username',
+                    hintText: 'Email',
                     hintStyle: const TextStyle(
                       fontFamily: 'Poppins',
                       color: Colors.black,
@@ -165,7 +172,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: passwordController,
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.length < 6) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a password';
+                    }
+                    if (value.length < 6) {
                       return 'Password must be at least 6 characters';
                     }
                     return null;
@@ -187,7 +197,37 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Login Button
+                // Confirm Password Field
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    }
+                    if (value != passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    contentPadding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    filled: true,
+                    fillColor: const Color(0xFFD7BCE8),
+                    hintText: 'Confirm Password',
+                    hintStyle: const TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Signup Button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
@@ -219,6 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pop(context);
 
                     if (success) {
+                      // Signup successful - go to home screen
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -226,38 +267,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
                     } else {
+                      // Signup failed - show error
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Login failed. Check your email and password.'),
+                          content: Text('Signup failed. Email may already be in use.'),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
                   },
                   child: const Text(
-                    'Login',
+                    'Sign Up',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // Forget Password
-                GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Forget password clicked")),
-                    );
-                  },
-                  child: const Text(
-                    'Forget Password',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      color: Colors.black,
-                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

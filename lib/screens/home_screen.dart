@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import '../models/note.dart';
-import '../models/category.dart';
-import '../services/category_service.dart';
-import '../services/notes_service.dart';
-import 'notes_list_screen.dart'; // 👈 FIXED: Changed from 'notes_list_screen.dart'
+import '../models/note_category.dart'; // 👈 UPDATED IMPORT
+import '../services/notes_manager.dart';
+import 'notes_list_screen.dart';
 
 class NotesHomeScreen extends StatefulWidget {
   const NotesHomeScreen({super.key});
@@ -15,33 +12,37 @@ class NotesHomeScreen extends StatefulWidget {
 }
 
 class _NotesHomeScreenState extends State<NotesHomeScreen> {
-  late final NotesService _notesService;
-  late final CategoryService _categoryService;
+  late final NotesManager _notesManager;
   final TextEditingController _searchController = TextEditingController();
 
   List<Note> _allNotes = [];
   List<Note> _filteredNotes = [];
-  late Box<Note> _notesBox;
 
-  String? _selectedFilterCategoryId; // null = show all categories
-  String _sortMethod = 'date_newest'; // Default sort: newest first
-  // Options: 'date_newest', 'date_oldest', 'title_az', 'category'
+  String? _selectedFilterCategoryId;
+  String _sortMethod = 'date_newest';
 
   @override
   void initState() {
     super.initState();
-    _notesService = NotesService();
-    _categoryService = CategoryService();
-    _notesBox = Hive.box<Note>('notes');
+    _notesManager = NotesManager();
+
+    // Ensure default categories exist
+    _notesManager.initCategories();
+
     _loadNotes();
 
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
     });
 
-    // Listen to box changes and reload notes
-    _notesBox.listenable().addListener(() {
+    _notesManager.notesListenable.addListener(() {
       _loadNotes();
+    });
+
+    _notesManager.categoriesListenable.addListener(() {
+      setState(() {
+        _loadNotes();
+      });
     });
   }
 
@@ -53,7 +54,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
 
   void _loadNotes() {
     setState(() {
-      _allNotes = _notesService.getNotes();
+      _allNotes = _notesManager.getNotes();
       _applyFilters();
     });
   }
@@ -61,12 +62,10 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
   void _applyFilters() {
     List<Note> notes = _allNotes;
 
-    // Filter by category
     if (_selectedFilterCategoryId != null) {
       notes = notes.where((note) => note.categoryId == _selectedFilterCategoryId).toList();
     }
 
-    // Filter by search
     if (_searchController.text.isNotEmpty) {
       notes = notes.where((note) {
         return note.title.toLowerCase().contains(_searchController.text.toLowerCase()) ||
@@ -74,34 +73,25 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
       }).toList();
     }
 
-    // Apply sorting
     _applySorting(notes);
-
     _filteredNotes = notes;
   }
 
   void _applySorting(List<Note> notes) {
     switch (_sortMethod) {
       case 'date_newest':
-      // Sort by date, newest first
         notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         break;
-
       case 'date_oldest':
-      // Sort by date, oldest first
         notes.sort((a, b) => a.createdAt.compareTo(b.createdAt));
         break;
-
       case 'title_az':
-      // Sort alphabetically by title
         notes.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
         break;
-
       case 'category':
-      // Sort by category name
         notes.sort((a, b) {
-          final catA = _categoryService.getCategoryById(a.categoryId);
-          final catB = _categoryService.getCategoryById(b.categoryId);
+          final catA = _notesManager.getCategoryById(a.categoryId);
+          final catB = _notesManager.getCategoryById(b.categoryId);
           final nameA = catA?.name ?? 'Unknown';
           final nameB = catB?.name ?? 'Unknown';
           return nameA.compareTo(nameB);
@@ -117,7 +107,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
   }
 
   void _showCategoryFilter() {
-    final categories = _categoryService.getCategories();
+    final categories = _notesManager.getCategories();
 
     showModalBottomSheet(
       context: context,
@@ -151,7 +141,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // All categories option
             ListTile(
               leading: Container(
                 width: 24,
@@ -175,7 +164,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               },
             ),
             const Divider(),
-            // 👇 UPDATED: List of categories with long-press delete
+            // 👇 UPDATED: NoteCategory type is inferred here
             ...(categories.map((category) => ListTile(
               leading: Container(
                 width: 24,
@@ -196,9 +185,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 });
                 Navigator.pop(context);
               },
-              // 👇 ADDED: Long-press to delete category
               onLongPress: () async {
-                // Can't delete "none" or "default" categories
                 if (category.id == 'none' || category.id == 'default') {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -209,9 +196,8 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                   return;
                 }
 
-                Navigator.pop(context); // Close bottom sheet first
+                Navigator.pop(context);
 
-                // Show confirmation dialog
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -233,7 +219,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 );
 
                 if (confirmed == true) {
-                  // Move all notes from this category to "none"
                   final notesInCategory = _allNotes.where((note) => note.categoryId == category.id).toList();
                   for (var note in notesInCategory) {
                     final updatedNote = Note(
@@ -241,15 +226,13 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                       title: note.title,
                       content: note.content,
                       createdAt: note.createdAt,
-                      categoryId: 'none', // Move to "None" category
+                      categoryId: 'none',
                     );
-                    await _notesService.addNote(updatedNote);
+                    await _notesManager.addNote(updatedNote);
                   }
 
-                  // Delete the category
-                  await _categoryService.deleteCategory(category.id);
+                  await _notesManager.deleteCategory(category.id);
 
-                  // Refresh UI
                   setState(() {
                     _loadNotes();
                   });
@@ -303,8 +286,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Date (Newest First)
             ListTile(
               leading: const Icon(Icons.calendar_today, color: Color(0xFF7B68AA)),
               title: const Text('Date (Newest First)'),
@@ -319,8 +300,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 Navigator.pop(context);
               },
             ),
-
-            // Date (Oldest First)
             ListTile(
               leading: const Icon(Icons.calendar_today_outlined, color: Color(0xFF7B68AA)),
               title: const Text('Date (Oldest First)'),
@@ -335,8 +314,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 Navigator.pop(context);
               },
             ),
-
-            // Title (A-Z)
             ListTile(
               leading: const Icon(Icons.sort_by_alpha, color: Color(0xFF7B68AA)),
               title: const Text('Title (A-Z)'),
@@ -351,8 +328,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 Navigator.pop(context);
               },
             ),
-
-            // Category
             ListTile(
               leading: const Icon(Icons.category, color: Color(0xFF7B68AA)),
               title: const Text('Category'),
@@ -367,7 +342,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 Navigator.pop(context);
               },
             ),
-
             const SizedBox(height: 16),
           ],
         ),
@@ -385,8 +359,9 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 👇 UPDATED: NoteCategory type
     final selectedCategory = _selectedFilterCategoryId != null
-        ? _categoryService.getCategoryById(_selectedFilterCategoryId!)
+        ? _notesManager.getCategoryById(_selectedFilterCategoryId!)
         : null;
 
     return Scaffold(
@@ -408,7 +383,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                // Greeting
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -439,7 +413,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                // Search bar
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
@@ -456,11 +429,9 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // All Notes header with filter and sort
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Category filter
                     GestureDetector(
                       onTap: _showCategoryFilter,
                       child: Row(
@@ -490,8 +461,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                         ],
                       ),
                     ),
-
-                    // Sort button
                     GestureDetector(
                       onTap: _showSortOptions,
                       child: Container(
@@ -510,7 +479,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                // Notes list
                 Expanded(
                   child: _filteredNotes.isEmpty
                       ? Center(
@@ -528,7 +496,8 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                     itemCount: _filteredNotes.length,
                     itemBuilder: (context, index) {
                       final note = _filteredNotes[index];
-                      final category = _categoryService.getCategoryById(note.categoryId);
+                      // 👇 UPDATED: NoteCategory type
+                      final category = _notesManager.getCategoryById(note.categoryId);
 
                       return GestureDetector(
                         onTap: () async {
@@ -539,11 +508,10 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                             ),
                           );
                           if (updatedNote != null) {
-                            await _notesService.addNote(updatedNote);
+                            await _notesManager.addNote(updatedNote);
                           }
                         },
                         onLongPress: () async {
-                          // Show confirmation dialog
                           final confirmed = await showDialog<bool>(
                             context: context,
                             builder: (context) => AlertDialog(
@@ -565,7 +533,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                           );
 
                           if (confirmed == true) {
-                            await _notesService.deleteNote(note.id);
+                            await _notesManager.deleteNote(note.id);
                           }
                         },
                         child: Padding(
@@ -595,7 +563,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                                               fontWeight: FontWeight.w600,
                                               color: Colors.black)),
                                     ),
-                                    // Category chip
                                     if (category != null)
                                       Container(
                                         padding: const EdgeInsets.symmetric(
@@ -671,7 +638,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 MaterialPageRoute(builder: (_) => const NoteEditorScreen()),
               );
               if (newNote != null) {
-                await _notesService.addNote(newNote);
+                await _notesManager.addNote(newNote);
               }
             },
             child: const Icon(Icons.add, color: Colors.white, size: 28),

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'models/note.dart';
-import 'models/category.dart';
-import 'services/category_service.dart';
+import 'models/note_category.dart';
+import 'services/hive_category_service.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/signup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,11 +18,11 @@ void main() async {
 
   // Register adapters
   Hive.registerAdapter(NoteAdapter());
-  Hive.registerAdapter(CategoryAdapter());
+  Hive.registerAdapter(NoteCategoryAdapter());
 
   // Open boxes
   await Hive.openBox<Note>('notes');
-  await Hive.openBox<Category>('categories');
+  await Hive.openBox<NoteCategory>('categories');
 
   // Initialize default categories
   final categoryService = CategoryService();

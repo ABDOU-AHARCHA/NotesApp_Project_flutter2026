@@ -2,8 +2,8 @@ import 'package:hive/hive.dart';
 
 part 'category.g.dart';
 
-@HiveType(typeId: 1) // Different from Note (typeId: 0)
-class Category {
+@HiveType(typeId: 1)
+class NoteCategory {
   @HiveField(0)
   final String id;
 
@@ -13,7 +13,7 @@ class Category {
   @HiveField(2)
   final int color; // Store color as int (Color.value)
 
-  Category({
+  NoteCategory({
     required this.id,
     required this.name,
     required this.color,
