@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
-import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -251,23 +250,16 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     );
 
-                    final bool success = await _authService.login(email, password);
+                    // ✅ FIXED: Changed from login() to signup()
+                    final bool success = await _authService.signup(email, password);
 
-                    if (!context.mounted) return;
+                    if (!mounted) return;
 
                     // Hide loading indicator
-                    Navigator.pop(context);
+                    Navigator.of(context).pop();
 
-                    if (success) {
-                      // Signup successful - go to home screen
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NotesHomeScreen(),
-                        ),
-                      );
-                    } else {
-                      // Signup failed - show error
+                    if (!success) {
+                      // Only show error if signup failed
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Signup failed. Email may already be in use.'),
@@ -275,6 +267,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       );
                     }
+                    // ✅ FIXED: Removed manual navigation - AuthGate handles it automatically
                   },
                   child: const Text(
                     'Sign Up',

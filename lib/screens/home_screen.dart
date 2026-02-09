@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/note.dart';
-import '../models/note_category.dart'; // 👈 UPDATED IMPORT
+import '../models/note_category.dart';
 import '../services/notes_manager.dart';
+import '../services/auth_service.dart';
 import 'notes_list_screen.dart';
 
 class NotesHomeScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class NotesHomeScreen extends StatefulWidget {
 
 class _NotesHomeScreenState extends State<NotesHomeScreen> {
   late final NotesManager _notesManager;
+  final AuthService _authService = AuthService();
   final TextEditingController _searchController = TextEditingController();
 
   List<Note> _allNotes = [];
@@ -106,6 +108,32 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     });
   }
 
+  // ✅ UPDATED: Better logout handling
+  void _handleLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await _authService.logout();
+      // AuthGate will automatically redirect to LoginScreen via authStateChanges stream
+    }
+  }
+
   void _showCategoryFilter() {
     final categories = _notesManager.getCategories();
 
@@ -164,7 +192,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               },
             ),
             const Divider(),
-            // 👇 UPDATED: NoteCategory type is inferred here
             ...(categories.map((category) => ListTile(
               leading: Container(
                 width: 24,
@@ -237,12 +264,14 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                     _loadNotes();
                   });
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Category "${category.name}" deleted'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Category "${category.name}" deleted'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
                 }
               },
             ))),
@@ -359,7 +388,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 👇 UPDATED: NoteCategory type
     final selectedCategory = _selectedFilterCategoryId != null
         ? _notesManager.getCategoryById(_selectedFilterCategoryId!)
         : null;
@@ -398,17 +426,37 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                                 color: Colors.black)),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(77),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.grid_view,
-                        color: Colors.black,
-                        size: 24,
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(77),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.grid_view,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: _handleLogout,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(77),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.logout,
+                              color: Colors.black,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -496,7 +544,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                     itemCount: _filteredNotes.length,
                     itemBuilder: (context, index) {
                       final note = _filteredNotes[index];
-                      // 👇 UPDATED: NoteCategory type
                       final category = _notesManager.getCategoryById(note.categoryId);
 
                       return GestureDetector(

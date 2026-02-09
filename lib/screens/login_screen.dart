@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'signup_screen.dart';
-import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  bool _isLoading = false; // ✅ NEW: Track loading state
+
   @override
   void dispose() {
     emailController.dispose();
@@ -27,85 +28,99 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFD7BCE8),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 100),
-            const Text(
-              'Welcome to Memoa',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
+      body: Stack( // ✅ NEW: Use Stack to overlay loading
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 100),
+                const Text(
+                  'Welcome to Memoa',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 85),
+                Container(
+                  child: loginForm(),
+                ),
+                const SizedBox(height: 30),
+                // Google Login Button Placeholder
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: const Color(0xFF8884FF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      // TODO: Google login functionality
+                    },
+                    label: const Text(
+                      'Continue With Google',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    icon: const Icon(
+                      Icons.g_mobiledata,
+                      color: Colors.black,
+                      size: 32,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Create Account Button - Navigate to Signup
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: const Color(0xFF8884FF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SignupScreen()),
+                      );
+                    },
+                    child: const Text(
+                      'Create new account',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 85),
+          ),
+          // ✅ NEW: Loading overlay
+          if (_isLoading)
             Container(
-              child: loginForm(),
-            ),
-            const SizedBox(height: 30),
-            // Google Login Button Placeholder
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: const Color(0xFF8884FF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                ),
-                onPressed: () {
-                  // TODO: Google login functionality
-                },
-                label: const Text(
-                  'Continue With Google',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.g_mobiledata,
-                  color: Colors.black,
-                  size: 32,
+              color: Colors.black54,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            // Create Account Button - Navigate to Signup
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: const Color(0xFF8884FF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SignupScreen()),
-                  );
-                },
-                child: const Text(
-                  'Create new account',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -196,42 +211,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                   ),
-                  onPressed: () async {
+                  onPressed: _isLoading ? null : () async { // ✅ Disable when loading
                     if (!_formKey.currentState!.validate()) return;
 
                     final String email = emailController.text.trim();
                     final String password = passwordController.text;
 
-                    // Show loading indicator
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
+                    print('🔐 LOGIN - Starting login for: $email');
 
+                    // ✅ NEW: Set loading state instead of showing dialog
+                    setState(() {
+                      _isLoading = true;
+                    });
+
+                    print('🔐 LOGIN - Calling authService.login()');
                     final bool success = await _authService.login(email, password);
 
-                    if (!context.mounted) return;
+                    print('🔐 LOGIN - Login result: $success');
 
-                    // Hide loading indicator
-                    Navigator.pop(context);
+                    // ✅ NEW: Only update state if still mounted
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = false;
+                      });
 
-                    if (success) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NotesHomeScreen(),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Login failed. Check your email and password.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
+                      if (!success) {
+                        print('❌ LOGIN - Login failed, showing error snackbar');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Login failed. Check your email and password.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      } else {
+                        print('✅ LOGIN - Login successful! AuthGate handling navigation...');
+                      }
                     }
                   },
                   child: const Text(
