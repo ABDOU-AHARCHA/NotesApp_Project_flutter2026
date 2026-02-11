@@ -59,8 +59,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       // TODO: Google login functionality
+                      final success = await _authService.signInWithGoogle();
+
+                      if (!success && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Google sign-in failed'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
                     label: const Text(
                       'Continue With Google',

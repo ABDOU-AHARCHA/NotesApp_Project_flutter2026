@@ -12,7 +12,20 @@
           "package_name": "dev.abdelilah.notes_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "913106454540-docj80li5oh32rf4gkugonjp7srksf6n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.abdelilah.notes_app",
+            "certificate_hash": "6c59117711030d1aab3998c6da9cd757f4525a1a"
+          }
+        },
+        {
+          "client_id": "913106454540-s58mk8n800o7d0kffi8e7k49hhqrm8q0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD5YPBnYckIqX_UP7EyEdCLOheVXYHVyLs"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913106454540-s58mk8n800o7d0kffi8e7k49hhqrm8q0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "913106454540-gfjfja6ukokksdaaa74uas8s6ouacdrf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.abdelilah.notesApp"
+              }
+            }
+          ]
         }
       }
     }
