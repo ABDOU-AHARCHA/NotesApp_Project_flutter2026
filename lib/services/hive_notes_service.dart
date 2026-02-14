@@ -14,6 +14,10 @@ class NotesService {
     await _notesBox.put(note.id, note);
   }
 
+  Future<void> updateNote(Note note) async {
+    await _notesBox.put(note.id, note);
+  }
+
   Future<void> deleteNote(String id) async {
     await _notesBox.delete(id);
   }

@@ -18,6 +18,7 @@ class AuthService {
       return false;
     }
   }
+
   //Google signin
   Future<bool> signInWithGoogle() async {
     try {

@@ -4,6 +4,7 @@ import '../models/note_category.dart';
 import '../services/notes_manager.dart';
 import '../services/auth_service.dart';
 import 'notes_list_screen.dart';
+import 'dart:async';
 
 class NotesHomeScreen extends StatefulWidget {
   const NotesHomeScreen({super.key});
@@ -19,9 +20,14 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
 
   List<Note> _allNotes = [];
   List<Note> _filteredNotes = [];
+  List<NoteCategory> _categories = [];
 
   String? _selectedFilterCategoryId;
   String _sortMethod = 'date_newest';
+
+  // Stream subscriptions
+  StreamSubscription<List<Note>>? _notesSubscription;
+  StreamSubscription<List<NoteCategory>>? _categoriesSubscription;
 
   @override
   void initState() {
@@ -31,34 +37,33 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     // Ensure default categories exist
     _notesManager.initCategories();
 
-    _loadNotes();
+    // Subscribe to notes stream for real-time updates
+    _notesSubscription = _notesManager.getNotesStream().listen((notes) {
+      setState(() {
+        _allNotes = notes;
+        _applyFilters();
+      });
+    });
+
+    // Subscribe to categories stream for real-time updates
+    _categoriesSubscription = _notesManager.getCategoriesStream().listen((categories) {
+      setState(() {
+        _categories = categories;
+      });
+    });
 
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
-    });
-
-    _notesManager.notesListenable.addListener(() {
-      _loadNotes();
-    });
-
-    _notesManager.categoriesListenable.addListener(() {
-      setState(() {
-        _loadNotes();
-      });
     });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _notesSubscription?.cancel();
+    _categoriesSubscription?.cancel();
+    _notesManager.dispose();
     super.dispose();
-  }
-
-  void _loadNotes() {
-    setState(() {
-      _allNotes = _notesManager.getNotes();
-      _applyFilters();
-    });
   }
 
   void _applyFilters() {
@@ -108,7 +113,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     });
   }
 
-  // ✅ UPDATED: Better logout handling
   void _handleLogout() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -130,13 +134,10 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
 
     if (confirmed == true && mounted) {
       await _authService.logout();
-      // AuthGate will automatically redirect to LoginScreen via authStateChanges stream
     }
   }
 
   void _showCategoryFilter() {
-    final categories = _notesManager.getCategories();
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -192,7 +193,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               },
             ),
             const Divider(),
-            ...(categories.map((category) => ListTile(
+            ...(_categories.map((category) => ListTile(
               leading: Container(
                 width: 24,
                 height: 24,
@@ -254,15 +255,12 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                       content: note.content,
                       createdAt: note.createdAt,
                       categoryId: 'none',
+                      userId: note.userId,
                     );
                     await _notesManager.addNote(updatedNote);
                   }
 
                   await _notesManager.deleteCategory(category.id);
-
-                  setState(() {
-                    _loadNotes();
-                  });
 
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -514,7 +512,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
+                          color: const Color.fromRGBO(255, 255, 255, 0.3),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -615,7 +613,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Color(category.color).withOpacity(0.2),
+                                          color: Color(category.color).withAlpha(40),
                                           borderRadius: BorderRadius.circular(12),
                                           border: Border.all(
                                             color: Color(category.color),

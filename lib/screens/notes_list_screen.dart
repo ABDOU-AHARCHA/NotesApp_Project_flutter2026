@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/note.dart';
 import '../models/note_category.dart';
-import '../services/hive_category_service.dart';
+import '../services/notes_manager.dart';
+import 'dart:async';
 
 class NoteEditorScreen extends StatefulWidget {
   final Note? note;
@@ -15,28 +16,28 @@ class NoteEditorScreen extends StatefulWidget {
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
-  late final CategoryService _categoryService;
+  late final NotesManager _notesManager;
 
-  String _selectedCategoryId = 'none'; // 👈 CHANGED: Default to 'none' instead of 'default'
+  String _selectedCategoryId = 'none';
   List<NoteCategory> _categories = [];
+
+  StreamSubscription<List<NoteCategory>>? _categoriesSubscription;
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.note?.title ?? '');
     _contentController = TextEditingController(text: widget.note?.content ?? '');
-    _categoryService = CategoryService();
+    _notesManager = NotesManager();
 
     // Set selected category (existing note or none)
-    _selectedCategoryId = widget.note?.categoryId ?? 'none'; // 👈 CHANGED
+    _selectedCategoryId = widget.note?.categoryId ?? 'none';
 
-    // Load categories
-    _loadCategories();
-  }
-
-  void _loadCategories() {
-    setState(() {
-      _categories = _categoryService.getCategories();
+    // Subscribe to categories stream for real-time updates
+    _categoriesSubscription = _notesManager.getCategoriesStream().listen((categories) {
+      setState(() {
+        _categories = categories;
+      });
     });
   }
 
@@ -44,6 +45,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _categoriesSubscription?.cancel();
+    _notesManager.dispose();
     super.dispose();
   }
 
@@ -225,8 +228,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     name: nameController.text.trim(),
                     color: selectedColor.value,
                   );
-                  await _categoryService.addCategory(newCategory);
-                  _loadCategories();
+                  await _notesManager.addCategory(newCategory);
                   setState(() {
                     _selectedCategoryId = newCategory.id;
                   });
@@ -246,7 +248,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedCategory = _categoryService.getCategoryById(_selectedCategoryId);
+    final selectedCategory = _notesManager.getCategoryById(_selectedCategoryId);
 
     return Scaffold(
       body: Container(
@@ -282,7 +284,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             title: _titleController.text.trim(),
                             content: _contentController.text.trim(),
                             createdAt: widget.note?.createdAt ?? DateTime.now(),
-                            categoryId: _selectedCategoryId, // Save category
+                            categoryId: _selectedCategoryId,
+                            userId: widget.note?.userId,
                           );
                           Navigator.pop(context, newNote);
                         } else {
@@ -349,7 +352,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  selectedCategory?.name ?? 'None', // 👈 CHANGED: Shows "None" instead of "Personal"
+                                  selectedCategory?.name ?? 'None',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: selectedCategory != null
