@@ -35,17 +35,9 @@ The project is currently a work in progress, with key features and Firebase inte
 |:---:|:---:|:---:|
 | ![Splash](screenshots/1%20Splash%20screen.png) | ![Welcome](screenshots/2%20Welcome%20screen.png) | ![Confirm Guest](screenshots/3%20Confirm%20Guest.png) |
 
-| Sign In | Registration | Forget Password |
-|:---:|:---:|:---:|
-| ![Sign In](screenshots/4%20Sign%20in.png) | ![Registration](screenshots/5%20Registration.png) | ![Forget Password](screenshots/6%20Forget%20Password.png) |
-
-<div align="center">
-
-| Create New Password |
-|:---:|
-| ![Create New Password](screenshots/7%20Create%20new%20password.png) |
-
-</div>
+| Sign In | Registration | Forget Password | Create New Password |
+|:---:|:---:|:---:|:---:|
+| ![Sign In](screenshots/4%20Sign%20in.png) | ![Registration](screenshots/5%20Registration.png) | ![Forget Password](screenshots/6%20Forget%20Password.png) | ![Create New Password](screenshots/7%20Create%20new%20password.png) |
 
 ---
 
