@@ -93,7 +93,7 @@ The project is currently a work in progress, with key features and Firebase inte
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/ABDOU-AHARCHA/NotesApp_Project_flutter2026
+git clone https://github.com/ABDOU-AHARCHA/NotesApp_Project_flutter2026.git
 cd NotesApp_Project_flutter2026
 ```
 
