@@ -18,6 +18,9 @@ Explore the interactive Figma prototype with full navigation and button interact
 <a href="https://www.figma.com/proto/MsamQfcTu5xnPj56wRoMlb/NOTE-PRO-Mobile-App--Community-?node-id=25-8&p=f&t=TsrFovGPeo2FY6EQ-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=25%3A8" target="_blank">
   <img src="https://img.shields.io/badge/Figma-Prototype-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="Figma Prototype"/>
 </a>
+<a href="https://www.figma.com/design/MsamQfcTu5xnPj56wRoMlb/NOTE-PRO-Mobile-App--Community-?node-id=2109-177&t=SQEXwx5kSGXNNvY7-1" target="_blank">
+  <img src="https://img.shields.io/badge/Figma-Design-A259FF?style=for-the-badge&logo=figma&logoColor=white" alt="Figma Design"/>
+</a>
 
 > Click the button above to open the interactive prototype in Figma.
 
