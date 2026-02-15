@@ -1,37 +1,86 @@
-# 📝 Notes App
+# 📝 Memoa – Notes App
 
-> ⚠️ **STILL UNDER DEVELOPMENT** ⚠️
+<div align="center">
 
-A **Flutter-based Notes App** designed to help users create, manage, and organize their notes efficiently. The project is currently a work in progress, with key features and Firebase integration being implemented gradually.
+⚠️ **STILL UNDER DEVELOPMENT** ⚠️
+
+A Flutter-based Notes App designed to help users create, manage, and organize their notes efficiently.  
+The project is currently a work in progress, with key features and Firebase integration being implemented gradually.
+
+</div>
 
 ---
 
-## 🔹 Features (Planned & Partial)
+## 🎨 Design & Prototype
 
-- **User Authentication (Firebase Auth)**
-  - Login with email & password
-  - Registration (Sign up)
-- Create, edit, and delete notes
-- Notes categorization (categories/tags)
-- Local storage with **Hive** (for offline persistence)
-- Notes listing with basic UI
-- Smooth navigation between screens
-- Form validation for user inputs
-- 🔜 **Future:** Cloud synchronization with Firebase Firestore
+Explore the interactive Figma prototype with full navigation and button interactions:
+
+[![Figma Prototype](https://img.shields.io/badge/Figma-Prototype-F24E1E?style=for-the-badge&logo=figma&logoColor=white)](YOUR_FIGMA_LINK_HERE)
+
+> Click the button above to open the interactive prototype in Figma.
+
+---
+
+## 🎬 App Demo
+
+<div align="center">
+
+![App Demo](screenshots/GIF_APP_UI.gif)
+
+</div>
 
 ---
 
 ## 📱 Screens
 
-| Screen | Description |
-|---|---|
-| Login Screen | Secure authentication |
-| Register Screen | Create a new account |
-| Notes List Screen | View all notes |
-| Note Editor Screen | Add or edit notes |
-| Notes Home Screen | Main navigation hub |
+### 🔐 Onboarding & Authentication
 
-> **Note:** Screens are under active development, and UI/UX may change.
+| Splash Screen | Welcome Screen | Confirm Guest |
+|:---:|:---:|:---:|
+| ![Splash](screenshots/1_splash_screen.png) | ![Welcome](screenshots/2_welcome_screen.png) | ![Confirm Guest](screenshots/3_confirm_guest.png) |
+
+| Sign In | Registration | Forget Password |
+|:---:|:---:|:---:|
+| ![Sign In](screenshots/4_sign_in.png) | ![Registration](screenshots/5_registration.png) | ![Forget Password](screenshots/6_forget_password.png) |
+
+<div align="center">
+
+| Create New Password |
+|:---:|
+| ![Create New Password](screenshots/7_create_new_password.png) |
+
+</div>
+
+---
+
+### 🏠 Main App
+
+| Home Screen | Sorting Options | Delete Note |
+|:---:|:---:|:---:|
+| ![Home](screenshots/8_home_screen.png) | ![Sorting](screenshots/9_sorting_option.png) | ![Delete](screenshots/10_delete_note.png) |
+
+| Main Text Screen | Choose Category | New Category |
+|:---:|:---:|:---:|
+| ![Text Screen](screenshots/11_main_text_screen.png) | ![Category](screenshots/12_choose_category.png) | ![New Category](screenshots/13_new_category.png) |
+
+---
+
+## 🔹 Features (Planned & Partial)
+
+| Status | Feature |
+|:---:|---|
+| ✅ | User Authentication (Firebase Auth) |
+| ✅ | Login with email & password |
+| ✅ | Registration (Sign up) |
+| ✅ | Guest access option |
+| ✅ | Forgot password / Reset password flow |
+| ✅ | Create, edit, and delete notes |
+| ✅ | Notes categorization (categories/tags) |
+| ✅ | Local storage with Hive (for offline persistence) |
+| ✅ | Notes listing with basic UI |
+| ✅ | Smooth navigation between screens |
+| ✅ | Form validation for user inputs |
+| 🔜 | Cloud synchronization with Firebase Firestore |
 
 ---
 
@@ -39,11 +88,11 @@ A **Flutter-based Notes App** designed to help users create, manage, and organiz
 
 | Technology | Purpose |
 |---|---|
-| Flutter | Frontend framework |
-| Dart | Programming language |
-| Hive | Local NoSQL storage |
-| Firebase Authentication | User login/registration |
-| Material Design | UI components |
+| ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white) | Frontend framework |
+| ![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat&logo=dart&logoColor=white) | Programming language |
+| ![Hive](https://img.shields.io/badge/Hive-FF7D00?style=flat&logo=hive&logoColor=white) | Local NoSQL storage |
+| ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black) | User authentication |
+| ![Material Design](https://img.shields.io/badge/Material_Design-757575?style=flat&logo=material-design&logoColor=white) | UI components |
 
 ---
 
@@ -86,6 +135,22 @@ lib/
 ├── services/        # Auth & Notes manager services
 ├── screens/         # All app screens
 └── main.dart        # App entry point
+
+screenshots/
+├── GIF_APP_UI.gif
+├── 1_splash_screen.png
+├── 2_welcome_screen.png
+├── 3_confirm_guest.png
+├── 4_sign_in.png
+├── 5_registration.png
+├── 6_forget_password.png
+├── 7_create_new_password.png
+├── 8_home_screen.png
+├── 9_sorting_option.png
+├── 10_delete_note.png
+├── 11_main_text_screen.png
+├── 12_choose_category.png
+└── 13_new_category.png
 ```
 
 ---
@@ -98,8 +163,8 @@ This project is actively under development. Contributions are welcome, but pleas
 
 ## 📌 Notes
 
-- Some features are **partially implemented**.
-- **Firebase integration** is ongoing.
+- Some features are partially implemented.
+- Firebase integration is ongoing.
 - UI is still evolving and may change.
 - Error handling and testing are in progress.
 
@@ -107,13 +172,13 @@ This project is actively under development. Contributions are welcome, but pleas
 
 ## 👤 Author
 
-**Abdelilah Aharcha** – Flutter developer.
+**Abdelilah Aharcha** – Flutter Developer
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the [MIT License](LICENSE).
 
 ```
 MIT License
