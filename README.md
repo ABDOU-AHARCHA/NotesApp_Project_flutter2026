@@ -37,17 +37,17 @@ Explore the interactive Figma prototype with full navigation and button interact
 
 | Splash Screen | Welcome Screen | Confirm Guest |
 |:---:|:---:|:---:|
-| ![Splash](screenshots/1_splash_screen.png) | ![Welcome](screenshots/2_welcome_screen.png) | ![Confirm Guest](screenshots/3_confirm_guest.png) |
+| ![Splash](screenshots/1%20Splash%20screen.png) | ![Welcome](screenshots/2%20Welcome%20screen.png) | ![Confirm Guest](screenshots/3%20Confirm%20Guest.png) |
 
 | Sign In | Registration | Forget Password |
 |:---:|:---:|:---:|
-| ![Sign In](screenshots/4_sign_in.png) | ![Registration](screenshots/5_registration.png) | ![Forget Password](screenshots/6_forget_password.png) |
+| ![Sign In](screenshots/4%20Sign%20in.png) | ![Registration](screenshots/5%20Registration.png) | ![Forget Password](screenshots/6%20Forget%20Password.png) |
 
 <div align="center">
 
 | Create New Password |
 |:---:|
-| ![Create New Password](screenshots/7_create_new_password.png) |
+| ![Create New Password](screenshots/7%20Create%20new%20password.png) |
 
 </div>
 
@@ -57,11 +57,11 @@ Explore the interactive Figma prototype with full navigation and button interact
 
 | Home Screen | Sorting Options | Delete Note |
 |:---:|:---:|:---:|
-| ![Home](screenshots/8_home_screen.png) | ![Sorting](screenshots/9_sorting_option.png) | ![Delete](screenshots/10_delete_note.png) |
+| ![Home](screenshots/8%20Home%20screen.png) | ![Sorting](screenshots/9%20Sorting%20Option%203.png) | ![Delete](screenshots/10%20Delete%20Note.png) |
 
 | Main Text Screen | Choose Category | New Category |
 |:---:|:---:|:---:|
-| ![Text Screen](screenshots/11_main_text_screen.png) | ![Category](screenshots/12_choose_category.png) | ![New Category](screenshots/13_new_category.png) |
+| ![Text Screen](screenshots/11%20Main%20Text%20screen.png) | ![Category](screenshots/12%20Choose%20Category%202.png) | ![New Category](screenshots/13%20New%20Category.png) |
 
 ---
 
@@ -138,19 +138,19 @@ lib/
 
 screenshots/
 ├── GIF_APP_UI.gif
-├── 1_splash_screen.png
-├── 2_welcome_screen.png
-├── 3_confirm_guest.png
-├── 4_sign_in.png
-├── 5_registration.png
-├── 6_forget_password.png
-├── 7_create_new_password.png
-├── 8_home_screen.png
-├── 9_sorting_option.png
-├── 10_delete_note.png
-├── 11_main_text_screen.png
-├── 12_choose_category.png
-└── 13_new_category.png
+├── 1 Splash screen.png
+├── 2 Welcome screen.png
+├── 3 Confirm Guest.png
+├── 4 Sign in.png
+├── 5 Registration.png
+├── 6 Forget Password.png
+├── 7 Create new password.png
+├── 8 Home screen.png
+├── 9 Sorting Option 3.png
+├── 10 Delete Note.png
+├── 11 Main Text screen.png
+├── 12 Choose Category 2.png
+└── 13 New Category.png
 ```
 
 ---
