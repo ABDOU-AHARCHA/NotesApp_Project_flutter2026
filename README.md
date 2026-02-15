@@ -170,7 +170,7 @@ This project is actively under development. Contributions are welcome, but pleas
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 ```
 MIT License
