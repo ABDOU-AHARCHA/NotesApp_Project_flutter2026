@@ -29,11 +29,15 @@ The project is currently a work in progress, with key features and Firebase inte
 
 ## 📱 Screens
 
-### 🔐 Onboarding & Authentication
+### 🌟 Onboarding
 
 | Splash Screen | Welcome Screen | Confirm Guest |
 |:---:|:---:|:---:|
 | ![Splash](screenshots/1%20Splash%20screen.png) | ![Welcome](screenshots/2%20Welcome%20screen.png) | ![Confirm Guest](screenshots/3%20Confirm%20Guest.png) |
+
+---
+
+### 🔐 Authentication
 
 | Sign In | Registration | Forget Password | Create New Password |
 |:---:|:---:|:---:|:---:|
