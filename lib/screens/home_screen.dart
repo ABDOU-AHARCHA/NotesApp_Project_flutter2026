@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/screens/welcome_screen.dart';
 import '../models/note.dart';
 import '../models/note_category.dart';
+import '../services/guest_service.dart';
 import '../services/notes_manager.dart';
 import '../services/auth_service.dart';
 import 'notes_list_screen.dart';
@@ -140,7 +142,12 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     );
 
     if (confirmed == true && mounted) {
-      await _authService.logout();
+      await _authService.logout(); // for Firebase users
+      await GuestService.clearGuestMode();   // for guest users
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+      );
     }
   }
 
