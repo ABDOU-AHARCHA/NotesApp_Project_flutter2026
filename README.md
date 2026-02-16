@@ -24,10 +24,10 @@
 
 <div align="center">
 
-⚠️ **STILL UNDER DEVELOPMENT** ⚠️
+✨ **FULLY FUNCTIONAL NOTES APPLICATION** ✨
 
 A Flutter-based Notes App designed to help users create, manage, and organize their notes efficiently.  
-The project is currently a work in progress, with key features and Firebase integration being implemented gradually.
+The project features complete authentication, note management, categorization, and local storage capabilities.
 
 </div>
 
@@ -79,7 +79,7 @@ The project is currently a work in progress, with key features and Firebase inte
 
 ---
 
-## 🔹 Features (Planned & Partial)
+## 🔹 Features
 
 | Status | Feature |
 |:---:|---|
@@ -91,10 +91,10 @@ The project is currently a work in progress, with key features and Firebase inte
 | ✅ | Create, edit, and delete notes |
 | ✅ | Notes categorization (categories/tags) |
 | ✅ | Local storage with Hive (for offline persistence) |
-| ✅ | Notes listing with basic UI |
+| ✅ | Notes listing with polished UI |
 | ✅ | Smooth navigation between screens |
 | ✅ | Form validation for user inputs |
-| 🔜 | Cloud synchronization with Firebase Firestore |
+| ✅ | Complete note management system |
 
 ---
 
@@ -171,16 +171,7 @@ screenshots/
 
 ## 🚧 Contributing
 
-This project is actively under development. Contributions are welcome, but please check issues and ongoing features before making major changes.
-
----
-
-## 📌 Notes
-
-- Some features are partially implemented.
-- Firebase integration is ongoing.
-- UI is still evolving and may change.
-- Error handling and testing are in progress.
+Contributions are welcome! Feel free to submit issues or pull requests to help improve the app.
 
 ---
 
