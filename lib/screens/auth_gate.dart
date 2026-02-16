@@ -28,7 +28,7 @@ class AuthGate extends StatelessWidget {
           // User is NOT logged in
           else {
             print('❌ AuthGate - Showing LoginScreen');
-            return const WelcomeScreen();
+            return const NotesHomeScreen();
           }
         }
 
