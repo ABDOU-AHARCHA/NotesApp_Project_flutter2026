@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'forget_password_screen.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
 import '../services/guest_service.dart';
@@ -279,8 +280,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Forget Password
                 GestureDetector(
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Forget password clicked")),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgetPasswordScreen(),
+                      ),
                     );
                   },
                   child: const Text(
