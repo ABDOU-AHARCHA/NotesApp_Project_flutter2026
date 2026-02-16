@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notes_app/screens/welcome_screen.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
@@ -27,7 +28,7 @@ class AuthGate extends StatelessWidget {
           // User is NOT logged in
           else {
             print('❌ AuthGate - Showing LoginScreen');
-            return const LoginScreen();
+            return const WelcomeScreen();
           }
         }
 
