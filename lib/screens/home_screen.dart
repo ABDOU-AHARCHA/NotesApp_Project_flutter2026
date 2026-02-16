@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/note.dart';
 import '../models/note_category.dart';
@@ -14,9 +15,10 @@ class NotesHomeScreen extends StatefulWidget {
 }
 
 class _NotesHomeScreenState extends State<NotesHomeScreen> {
-  late final NotesManager _notesManager;
+  late final NotesManager _notesManager= NotesManager();
   final AuthService _authService = AuthService();
   final TextEditingController _searchController = TextEditingController();
+
 
   List<Note> _allNotes = [];
   List<Note> _filteredNotes = [];
@@ -32,18 +34,23 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _notesManager = NotesManager();
+    // _notesManager = NotesManager();
 
     // Ensure default categories exist
     _notesManager.initCategories();
 
+
+
     // Subscribe to notes stream for real-time updates
+
+
     _notesSubscription = _notesManager.getNotesStream().listen((notes) {
       setState(() {
         _allNotes = notes;
         _applyFilters();
       });
     });
+
 
     // Subscribe to categories stream for real-time updates
     _categoriesSubscription = _notesManager.getCategoriesStream().listen((categories) {
@@ -554,6 +561,12 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                           );
                           if (updatedNote != null) {
                             await _notesManager.addNote(updatedNote);
+                            // _notesSubscription = _notesManager.getNotesStream().listen((notes) {
+                            //   setState(() {
+                            //     _allNotes = notes;
+                            //     _applyFilters();
+                            //   });
+                            // });
                           }
                         },
                         onLongPress: () async {
@@ -579,6 +592,12 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
 
                           if (confirmed == true) {
                             await _notesManager.deleteNote(note.id);
+                            // _notesSubscription = _notesManager.getNotesStream().listen((notes) {
+                            //   setState(() {
+                            //     _allNotes = notes;
+                            //     _applyFilters();
+                            //   });
+                            // });
                           }
                         },
                         child: Padding(
@@ -684,6 +703,12 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
               );
               if (newNote != null) {
                 await _notesManager.addNote(newNote);
+                // _notesSubscription = _notesManager.getNotesStream().listen((notes) {
+                //   setState(() {
+                //     _allNotes = notes;
+                //     _applyFilters();
+                //   });
+                // });
               }
             },
             child: const Icon(Icons.add, color: Colors.white, size: 28),

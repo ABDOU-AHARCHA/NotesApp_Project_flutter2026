@@ -99,11 +99,16 @@ class NotesManager {
       return _firestore
           .collection('notes')
           .where('userId', isEqualTo: uid)
-          .orderBy('createdAt', descending: true)
+      // ❌ REMOVED: .orderBy('createdAt', descending: true)
+      // This required a composite Firestore index that likely doesn't exist,
+      // causing Firestore to silently return empty results after reinstall.
           .snapshots()
+          .handleError((error) {
+        debugPrint('Firestore stream error: $error');
+      })
           .map((snapshot) => snapshot.docs
-              .map((doc) => Note.fromMap(doc.data()))
-              .toList());
+          .map((doc) => Note.fromMap(doc.data()))
+          .toList());
     } else {
       final controller = StreamController<List<Note>>();
 
