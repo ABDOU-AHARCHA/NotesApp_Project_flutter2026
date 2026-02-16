@@ -39,16 +39,6 @@ The project is currently a work in progress, with key features and Firebase inte
 
 ---
 
-## 🗺 Complete App Flow
-
-<div align="center">
-
-![Complete Flow](screenshots/check_the-complete_flow_images.png)
-
-</div>
-
----
-
 ## 🎬 App Demo
 
 <div align="center">
@@ -162,7 +152,6 @@ lib/
 
 screenshots/
 ├── GIF_APP_UI.gif
-├── check_the-complete_flow_images.png
 ├── 1 Splash screen.png
 ├── 2 Welcome screen.png
 ├── 3 Confirm Guest.png
