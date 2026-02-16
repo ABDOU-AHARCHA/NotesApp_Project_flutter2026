@@ -263,15 +263,8 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                 if (confirmed == true) {
                   final notesInCategory = _allNotes.where((note) => note.categoryId == category.id).toList();
                   for (var note in notesInCategory) {
-                    final updatedNote = Note(
-                      id: note.id,
-                      title: note.title,
-                      content: note.content,
-                      createdAt: note.createdAt,
-                      categoryId: 'none',
-                      userId: note.userId,
-                    );
-                    await _notesManager.addNote(updatedNote);
+                    final updatedNote = note.copyWith(categoryId: 'none');
+                    await _notesManager.updateNote(updatedNote);  // ✅ correct
                   }
 
                   await _notesManager.deleteCategory(category.id);

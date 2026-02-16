@@ -7,14 +7,30 @@ import 'package:hive/hive.dart';
 class CategoryService {
   final Box<NoteCategory> _categoryBox = Hive.box<NoteCategory>('categories');
 
+  // =========================================================
+  // DEFAULT CATEGORIES (exposed for cloud init)
+  // =========================================================
+
+  List<NoteCategory> getDefaultCategories() {
+    return [
+      NoteCategory(id: 'none', name: 'None', color: Colors.grey.value),
+      NoteCategory(id: 'default', name: 'Personal', color: Colors.blue.value),
+      NoteCategory(id: 'work', name: 'Work', color: Colors.orange.value),
+      NoteCategory(id: 'ideas', name: 'Ideas', color: Colors.purple.value),
+    ];
+  }
+
   Future<void> initializeDefaultCategories() async {
     if (_categoryBox.isEmpty) {
-      await addCategory(NoteCategory(id: 'none', name: 'None', color: Colors.grey.value));
-      await addCategory(NoteCategory(id: 'default', name: 'Personal', color: Colors.blue.value));
-      await addCategory(NoteCategory(id: 'work', name: 'Work', color: Colors.orange.value));
-      await addCategory(NoteCategory(id: 'ideas', name: 'Ideas', color: Colors.purple.value));
+      for (final category in getDefaultCategories()) {
+        await addCategory(category);
+      }
     }
   }
+
+  // =========================================================
+  // CRUD
+  // =========================================================
 
   List<NoteCategory> getCategories() {
     return _categoryBox.values.toList();
