@@ -35,7 +35,7 @@ The project is currently a work in progress, with key features and Firebase inte
 
 ## 🎨 Design & Prototype
 
-🔴 [▶ View Interactive Prototype](https://www.figma.com/proto/MsamQfcTu5xnPj56wRoMlb/NOTE-PRO-Mobile-App--Community-?node-id=25-8&p=f&t=TsrFovGPeo2FY6EQ-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=25%3A8) &nbsp;|&nbsp; 🟣 [Browse Full Design](https://www.figma.com/design/MsamQfcTu5xnPj56wRoMlb/NOTE-PRO-Mobile-App--Community-?node-id=2109-177&t=SQEXwx5kSGXNNvY7-1) &nbsp;|&nbsp; 🟢 [Complete Flow](screenshots/check_the-complete_flow_images.png)
+🔴 [▶ View Interactive Prototype](https://www.figma.com/proto/MsamQfcTu5xnPj56wRoMlb/NOTE-PRO-Mobile-App--Community-?node-id=25-8&p=f&t=TsrFovGPeo2FY6EQ-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=25%3A8) &nbsp;|&nbsp; 🟣 [Browse Full Design](https://www.figma.com/design/MsamQfcTu5xnPj56wRoMlb/NOTE-PRO-Mobile-App--Community-?node-id=2109-177&t=SQEXwx5kSGXNNvY7-1) &nbsp;|&nbsp; 🟢 [Complete Flow](screenshots/check_the-complete flow_images.png)
 
 ---
 
