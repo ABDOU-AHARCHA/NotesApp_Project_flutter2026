@@ -422,9 +422,9 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Text('Hi, zain',
+                        Text('Hi,',
                             style: TextStyle(fontSize: 16, color: Colors.black87)),
-                        Text('Good Morning',
+                        Text('Welcome again',
                             style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,

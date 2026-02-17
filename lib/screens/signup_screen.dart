@@ -266,6 +266,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           backgroundColor: Colors.red,
                         ),
                       );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
                     }
                     // ✅ FIXED: Removed manual navigation - AuthGate handles it automatically
                   },
