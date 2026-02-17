@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/auth_service.dart';
+
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -134,14 +136,28 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const CreateNewPasswordScreen(),
-                      //   ),
-                      // );
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    final AuthService authService = AuthService();
+                    final bool success = await authService.resetPassword(emailController.text.trim());
+
+                    if (!mounted) return;
+
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password reset email sent! Check your inbox.'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed. Make sure the email is registered.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                     }
                   },
                   child: const Text(

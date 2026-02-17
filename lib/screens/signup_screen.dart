@@ -254,21 +254,20 @@ class _SignupScreenState extends State<SignupScreen> {
                     final bool success = await _authService.signup(email, password);
 
                     if (!mounted) return;
+                    Navigator.of(context).pop(); // close spinner
 
-                    // Hide loading indicator
-                    Navigator.of(context).pop();
-
-                    if (!success) {
-                      // Only show error if signup failed
+                    if (success) {
+                      await _authService.logout(); // sign them out immediately
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Signup failed. Email may already be in use.'),
                           backgroundColor: Colors.red,
                         ),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
                       );
                     }
                     // ✅ FIXED: Removed manual navigation - AuthGate handles it automatically

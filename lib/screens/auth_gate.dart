@@ -22,13 +22,9 @@ class AuthGate extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           // User is logged in
           if (snapshot.hasData) {
-            print('✅ AuthGate - Showing NotesHomeScreen');
             return const NotesHomeScreen();
-          }
-          // User is NOT logged in
-          else {
-            print('❌ AuthGate - Showing LoginScreen');
-            return const NotesHomeScreen();
+          } else {
+            return const LoginScreen(); // ✅ CORRECT
           }
         }
 
