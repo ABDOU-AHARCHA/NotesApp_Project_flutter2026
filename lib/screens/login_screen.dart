@@ -251,6 +251,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (mounted) {
                       setState(() {
                         _isLoading = false;
+                        if (success) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const NotesHomeScreen()),
+                          );
+                        }
                       });
 
                       if (!success) {

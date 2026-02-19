@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
+import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -46,7 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
               child: signupForm(),
             ),
             const SizedBox(height: 30),
-            // Google Signup Button Placeholder
+            // ✅ Google Signup Button — same logic as Login Screen
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 60),
               child: ElevatedButton.icon(
@@ -57,8 +58,22 @@ class _SignupScreenState extends State<SignupScreen> {
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                 ),
-                onPressed: () {
-                  // TODO: Google signup functionality
+                onPressed: () async {
+                  final success = await _authService.signInWithGoogle(); // ✅ same as login
+
+                  if (success && context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotesHomeScreen()),
+                    );
+                  } else if (!success && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Google sign-in failed'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
                 label: const Text(
                   'Continue With Google',
@@ -95,7 +110,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   );
                 },
                 child: const Text(
-                  'Already have an account? Login',
+                  'Login instead!',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,
@@ -143,7 +158,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    // Basic email validation
                     if (!value.contains('@') || !value.contains('.')) {
                       return 'Please enter a valid email';
                     }
@@ -241,7 +255,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     final String email = emailController.text.trim();
                     final String password = passwordController.text;
 
-                    // Show loading indicator
                     showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -250,14 +263,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     );
 
-                    // ✅ FIXED: Changed from login() to signup()
                     final bool success = await _authService.signup(email, password);
 
                     if (!mounted) return;
-                    Navigator.of(context).pop(); // close spinner
+                    Navigator.of(context).pop();
 
                     if (success) {
-                      await _authService.logout(); // sign them out immediately
+                      await _authService.logout();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -270,7 +282,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       );
                     }
-                    // ✅ FIXED: Removed manual navigation - AuthGate handles it automatically
                   },
                   child: const Text(
                     'Sign Up',

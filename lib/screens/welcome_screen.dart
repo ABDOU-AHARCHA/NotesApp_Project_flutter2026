@@ -58,8 +58,7 @@ class WelcomeScreen extends StatelessWidget {
               // ── Continue as Guest Button ──
               _WelcomeButton(
                 label: 'Continue as Guest',
-                  onPressed: () => _showGuestModeAlert(context),
-
+                onPressed: () => _showGuestModeAlert(context),
               ),
 
               const SizedBox(height: 48),
@@ -71,6 +70,7 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
+// ── Unified button matching Login Screen style exactly ──
 class _WelcomeButton extends StatelessWidget {
   const _WelcomeButton({
     required this.label,
@@ -82,16 +82,14 @@ class _WelcomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 58,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF8884FF),
-          elevation: 4,
-          shadowColor: const Color(0xFF8884FF).withOpacity(0.4),
+          minimumSize: const Size(double.infinity, 50), // ✅ matches login
+          backgroundColor: const Color(0xFF8884FF),     // ✅ matches login
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(15.0),  // ✅ matches login
           ),
         ),
         onPressed: onPressed,
@@ -99,9 +97,9 @@ class _WelcomeButton extends StatelessWidget {
           label,
           style: const TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+            fontSize: 16,                               // ✅ matches login
+            color: Colors.black,                        // ✅ matches login
+            fontWeight: FontWeight.bold,                // ✅ matches login
           ),
         ),
       ),
@@ -109,53 +107,58 @@ class _WelcomeButton extends StatelessWidget {
   }
 }
 
-
-// bottom slide confirmation
+// ── Bottom sheet with system nav bar fix + matched button styles ──
 void _showGuestModeAlert(BuildContext context) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (context) => Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF5E6F5),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Important:',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Notes are saved locally and cannot be recovered after uninstalling the app.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, color: Colors.black87, height: 1.5),
-          ),
-          const SizedBox(height: 32),
+    useRootNavigator: true,
+    builder: (context) {
+      final double bottomPadding = MediaQuery.of(context).viewPadding.bottom;
 
-          // Continue button — now includes GuestService + navigation
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
+      return Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFFF5E6F5),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 32,
+          bottom: 16 + bottomPadding, // ✅ system nav bar fix
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Important:',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Notes are saved locally and cannot be recovered after uninstalling the app.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, color: Colors.black87, height: 1.5),
+            ),
+            const SizedBox(height: 32),
+
+            // ── Continue button — matched to login style ──
+            ElevatedButton(
               onPressed: () async {
-                await GuestService.setGuestMode(); // ← saves the choice
+                await GuestService.setGuestMode();
                 if (context.mounted) {
                   Navigator.pushReplacement(
                     context,
@@ -164,40 +167,47 @@ void _showGuestModeAlert(BuildContext context) {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7B6FCD),
+                minimumSize: const Size(double.infinity, 50), // ✅ matches login
+                backgroundColor: const Color(0xFF8884FF),     // ✅ matches login
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(15.0),  // ✅ matches login
                 ),
               ),
               child: const Text(
                 'Continue',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,                               // ✅ matches login
+                  color: Colors.black,                        // ✅ matches login
+                  fontWeight: FontWeight.bold,                // ✅ matches login
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          // Cancel button — just closes the sheet
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
+            // ── Cancel button — matched to login style ──
+            ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF9B8FE0),
+                minimumSize: const Size(double.infinity, 50), // ✅ matches login
+                backgroundColor: const Color(0xFF8884FF),     // ✅ matches login
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(15.0),  // ✅ matches login
                 ),
               ),
               child: const Text(
                 'Cancel',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,                               // ✅ matches login
+                  color: Colors.black,                        // ✅ matches login
+                  fontWeight: FontWeight.bold,                // ✅ matches login
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    ),
+          ],
+        ),
+      );
+    },
   );
 }
