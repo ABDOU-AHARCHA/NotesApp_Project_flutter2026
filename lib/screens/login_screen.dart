@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../services/auth_service.dart';
-import 'forget_password_screen.dart';
-import 'home_screen.dart';
-import 'signup_screen.dart';
-import '../services/guest_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -67,10 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       final success = await _authService.signInWithGoogle();
 
                       if (success && context.mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const NotesHomeScreen()),
-                        );
+                        context.go('/home');
                       } else if (!success && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -109,10 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SignupScreen()),
-                      );
+                      context.go('/signup');
                     },
                     child: const Text(
                       'Create new account',
@@ -242,33 +233,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       _isLoading = true;
                     });
 
-                    print('🔐 LOGIN - Calling authService.login()');
                     final bool success = await _authService.login(email, password);
-
-                    print('🔐 LOGIN - Login result: $success');
 
                     // ✅ NEW: Only update state if still mounted
                     if (mounted) {
                       setState(() {
                         _isLoading = false;
-                        if (success) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const NotesHomeScreen()),
-                          );
-                        }
                       });
-
-                      if (!success) {
-                        print('❌ LOGIN - Login failed, showing error snackbar');
+                      if (success) {
+                        context.go('/home');
+                      } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Login failed. Check your email and password.'),
                             backgroundColor: Colors.red,
                           ),
                         );
-                      } else {
-                        print('✅ LOGIN - Login successful! AuthGate handling navigation...');
                       }
                     }
                   },
@@ -286,12 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Forget Password
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgetPasswordScreen(),
-                      ),
-                    );
+                    context.push('/forgot-password');
                   },
                   child: const Text(
                     'Forget Password',

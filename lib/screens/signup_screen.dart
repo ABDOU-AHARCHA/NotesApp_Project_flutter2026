@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../services/auth_service.dart';
-import 'login_screen.dart';
-import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -62,10 +61,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   final success = await _authService.signInWithGoogle(); // ✅ same as login
 
                   if (success && context.mounted) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const NotesHomeScreen()),
-                    );
+                    context.go('/home');
                   } else if (!success && context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -104,10 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
+                  context.go('/login');
                 },
                 child: const Text(
                   'Login instead!',
@@ -270,10 +263,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     if (success) {
                       await _authService.logout();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
+                      context.go('/login');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

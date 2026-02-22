@@ -6,7 +6,7 @@ import 'models/note_category.dart';
 import 'services/hive_category_service.dart';
 import 'theme/app_theme.dart';
 import 'firebase_options.dart';
-import 'router.dart';
+import 'core/router/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
