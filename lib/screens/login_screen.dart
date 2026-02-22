@@ -103,7 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     onPressed: () {
-                      context.go('/signup');
+
+                        context.push('/signup');
+
                     },
                     child: const Text(
                       'Create new account',

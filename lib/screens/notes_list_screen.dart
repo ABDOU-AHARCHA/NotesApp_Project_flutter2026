@@ -169,7 +169,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      useRootNavigator: true, // ✅ above system UI
+     // ✅ above system UI
       isScrollControlled: true, // ✅ sheet rises with keyboard
       builder: (context) {
         final double bottomPadding = MediaQuery.of(context).viewPadding.bottom; // ✅ nav bar fix

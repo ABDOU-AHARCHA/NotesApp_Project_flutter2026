@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/screens/welcome_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../models/note.dart';
 import '../models/note_category.dart';
 import '../services/guest_service.dart';
@@ -133,10 +134,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     if (confirmed == true && mounted) {
       await _authService.logout();
       await GuestService.clearGuestMode();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-      );
+      if (mounted) context.go('/welcome');
     }
   }
 
@@ -285,7 +283,6 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      useRootNavigator: true, // ✅ FIX: overlay above system UI
       builder: (context) {
         final double bottomPadding = MediaQuery.of(context).viewPadding.bottom; // ✅ FIX
         return Container(
@@ -396,288 +393,294 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
         ? _notesManager.getCategoryById(_selectedFilterCategoryId!)
         : null;
 
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE8C5E8),
-              Color(0xFFD4A5D4),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Hi,',
-                            style: TextStyle(fontSize: 16, color: Colors.black87)),
-                        Text('Welcome again',
-                            style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black)),
-                      ],
-                    ),
-                    // grid_view removed, only logout
-                    GestureDetector(
-                      onTap: _handleLogout,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(77),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.logout,
-                          color: Colors.black,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.search, color: Colors.black54),
-                      hintText: 'Search note',
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTap: _showCategoryFilter,
-                      child: Row(
-                        children: [
-                          Text(
-                            selectedCategory != null
-                                ? selectedCategory.name
-                                : 'All Notes',
-                            style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.arrow_drop_down, color: Colors.black, size: 28),
-                          if (selectedCategory != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: Color(selectedCategory.color),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: _showSortOptions,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color.fromRGBO(255, 255, 255, 0.3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.sort,
-                          color: Colors.black,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: _filteredNotes.isEmpty
-                      ? Center(
-                    child: Text(
-                      _searchController.text.isNotEmpty
-                          ? 'No notes found'
-                          : _selectedFilterCategoryId != null
-                          ? 'No notes in this category'
-                          : 'No notes yet. Tap + to create one!',
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black54),
-                    ),
-                  )
-                      : ListView.builder(
-                    itemCount: _filteredNotes.length,
-                    itemBuilder: (context, index) {
-                      final note = _filteredNotes[index];
-                      final category = _notesManager.getCategoryById(note.categoryId);
-
-                      return GestureDetector(
-                        onTap: () async {
-                          final updatedNote = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => NoteEditorScreen(note: note),
-                            ),
-                          );
-                          if (updatedNote != null) {
-                            await _notesManager.addNote(updatedNote);
-                          }
-                        },
-                        onLongPress: () async {
-                          final confirmed = await showDialog<bool>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Delete Note'),
-                              content: const Text(
-                                  'Are you sure you want to delete this note?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: const Text('Delete',
-                                      style: TextStyle(color: Colors.red)),
-                                ),
-                              ],
-                            ),
-                          );
-
-                          if (confirmed == true) {
-                            await _notesManager.deleteNote(note.id);
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: index == 0
-                                  ? Colors.white
-                                  : const Color(0xFFE8D4E8),
-                              borderRadius: BorderRadius.circular(16),
-                              border: index == 0
-                                  ? Border.all(
-                                  color: const Color(0xFF7B68AA), width: 2)
-                                  : null,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(note.title,
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black)),
-                                    ),
-                                    if (category != null)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(category.color).withAlpha(40),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: Color(category.color),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          category.name,
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: Color(category.color),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(note.content,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontSize: 14, color: Colors.black54)),
-                                const SizedBox(height: 4),
-                                Text(
-                                    '${_monthName(note.createdAt.month)} ${note.createdAt.day}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black38)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFE8C5E8),
+                Color(0xFFD4A5D4),
               ],
             ),
           ),
-        ),
-      ),
-      floatingActionButton: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF9B7FDB), Color(0xFF7B68AA)],
-          ),
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF7B68AA).withAlpha(102),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('Hi,',
+                              style: TextStyle(fontSize: 16, color: Colors.black87)),
+                          Text('Welcome again',
+                              style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                        ],
+                      ),
+                      // grid_view removed, only logout
+                      GestureDetector(
+                        onTap: _handleLogout,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(77),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.logout,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.search, color: Colors.black54),
+                        hintText: 'Search note',
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: _showCategoryFilter,
+                        child: Row(
+                          children: [
+                            Text(
+                              selectedCategory != null
+                                  ? selectedCategory.name
+                                  : 'All Notes',
+                              style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_drop_down, color: Colors.black, size: 28),
+                            if (selectedCategory != null) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: Color(selectedCategory.color),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: _showSortOptions,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(255, 255, 255, 0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.sort,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: _filteredNotes.isEmpty
+                        ? Center(
+                      child: Text(
+                        _searchController.text.isNotEmpty
+                            ? 'No notes found'
+                            : _selectedFilterCategoryId != null
+                            ? 'No notes in this category'
+                            : 'No notes yet. Tap + to create one!',
+                        style: const TextStyle(
+                            fontSize: 16, color: Colors.black54),
+                      ),
+                    )
+                        : ListView.builder(
+                      itemCount: _filteredNotes.length,
+                      itemBuilder: (context, index) {
+                        final note = _filteredNotes[index];
+                        final category = _notesManager.getCategoryById(note.categoryId);
+
+                        return GestureDetector(
+                          onTap: () async {
+                            final updatedNote = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => NoteEditorScreen(note: note),
+                              ),
+                            );
+                            if (updatedNote != null) {
+                              await _notesManager.addNote(updatedNote);
+                            }
+                          },
+                          onLongPress: () async {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete Note'),
+                                content: const Text(
+                                    'Are you sure you want to delete this note?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('Delete',
+                                        style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              await _notesManager.deleteNote(note.id);
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: index == 0
+                                    ? Colors.white
+                                    : const Color(0xFFE8D4E8),
+                                borderRadius: BorderRadius.circular(16),
+                                border: index == 0
+                                    ? Border.all(
+                                    color: const Color(0xFF7B68AA), width: 2)
+                                    : null,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(note.title,
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black)),
+                                      ),
+                                      if (category != null)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Color(category.color).withAlpha(40),
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Color(category.color),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            category.name,
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: Color(category.color),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(note.content,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black54)),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                      '${_monthName(note.createdAt.month)} ${note.createdAt.day}',
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.black38)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
+        floatingActionButton: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF9B7FDB), Color(0xFF7B68AA)],
+            ),
             borderRadius: BorderRadius.circular(28),
-            onTap: () async {
-              final newNote = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NoteEditorScreen()),
-              );
-              if (newNote != null) {
-                await _notesManager.addNote(newNote);
-              }
-            },
-            child: const Icon(Icons.add, color: Colors.white, size: 28),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF7B68AA).withAlpha(102),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(28),
+              onTap: () async {
+                final newNote = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NoteEditorScreen()),
+                );
+                if (newNote != null) {
+                  await _notesManager.addNote(newNote);
+                }
+              },
+              child: const Icon(Icons.add, color: Colors.white, size: 28),
+            ),
           ),
         ),
       ),
